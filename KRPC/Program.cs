@@ -157,12 +157,20 @@ namespace KRPC
             {
                 continue;
             }
-            print("Executing burn");
+            print("Executing burn" + burntime);
             vessel.Control.Throttle = 1;
-            Thread.Sleep((int)((burntime/1000) - 10.0));
+            Thread.Sleep(((int)((burntime-0.1)*1000)));
             print("Fine tuning");
-            vessel.Control.Throttle = 0.5f;
+            vessel.Control.Throttle = 0.05f;
+            var remaining_burn = conn.AddStream(() => node.RemainingBurnVector(node.ReferenceFrame));
+            while(remaining_burn.Get().Item2 > 0)
+            {
+                continue;
+            }
+            vessel.Control.Throttle = 0;
+            node.Remove();
 
+            print("Launch Complete!");
 
 
 
